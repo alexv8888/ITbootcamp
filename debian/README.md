@@ -8,7 +8,7 @@ This playbook does the following:
 ## _How to use_
 
 - Set the server ip and the username in inv.yaml
-- Put usernames and keys of the users to be created
+- Put usernames and keys of the users to be created in vault.yaml
 - Run: 
 ```sh
 ansible-playbook -i inv.yaml sslhardening.yaml --ask-become-pass --ask-vault-pass
