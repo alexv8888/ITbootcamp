@@ -1,6 +1,0 @@
-gitlab:
-  vars:
-    user: admin
-  hosts:
-    host:
-      ansible_host: 192.168.0.188
