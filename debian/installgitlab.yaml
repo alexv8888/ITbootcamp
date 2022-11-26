@@ -1,0 +1,42 @@
+- name: Install gitlab
+  hosts: all
+  user: "{{ user }}"
+  gather_facts: false
+  become: yes
+
+  tasks:
+  - name: Update repositories cache and install  packages
+    ansible.builtin.apt:
+      name: 
+        - curl
+        - openssh-server
+        - ca-certificates
+        - tzdata
+        - perl
+      update_cache: yes
+
+  - name: Install postfix
+    ansible.builtin.apt:
+      name: 
+        - postfix
+      update_cache: no
+
+  - name: Add the GitLab package repository
+    ansible.builtin.shell:
+      cmd: curl https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh | sudo bash
+
+  - name:  Install the GitLab package
+    ansible.builtin.shell:
+      cmd: sudo apt-get install gitlab-ce #sudo EXTERNAL_URL="https://gitlab.example.com" apt-get install gitlab-ce 
+ 
+  - name: Reconfigure
+    ansible.builtin.shell:
+      cmd: sudo gitlab-ctl reconfigure
+
+  - name: Read the initial_root_password  file content
+    ansible.builtin.shell: cat /etc/gitlab/initial_root_password | grep "Password:"
+    register: initial_root_password
+
+  - name: Print the initial_root_password to a console
+    ansible.builtin.debug:
+      msg: "{{ initial_root_password.stdout }}"
