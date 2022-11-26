@@ -1,0 +1,56 @@
+- name: Log in as new user to disable root
+  hosts: all
+  user: "{{ user }}"
+  gather_facts: false
+  become: yes
+
+  tasks:
+  - name: Disable root login over SSH
+    ansible.builtin.lineinfile: dest=/etc/ssh/sshd_config regexp="^PermitRootLogin" line="PermitRootLogin no" state=present
+    notify:
+      - restart sshd
+
+  - name: Disable password login
+    ansible.builtin.lineinfile: dest=/etc/ssh/sshd_config regexp="^PasswordAuthentication" line="PasswordAuthentication no" state=present
+    notify:
+      - restart sshd
+
+  - name: Import secrets from vault
+    ansible.builtin.include_vars:
+      file: "vault.yaml"
+
+  - name: Add several users
+    ansible.builtin.user:
+      name: "{{ item.name }}"
+      shell: /bin/bash
+      groups: ["{{ item.name }}", sudo]
+      append: yes
+      state: present
+    with_items: "{{ user_details }}"
+
+  - name: Add .ssh directories
+    ansible.builtin.file:
+      path=/home/{{ item.name }}/.ssh
+      state=directory
+      mode=0700
+      owner={{ item.name }}
+      group={{ item.name }}
+    with_items: "{{ user_details }}"
+
+  - name: Add keys
+    ansible.builtin.lineinfile:
+      dest=/home/{{ item.name }}/.ssh/authorized_keys
+      state=present
+      create=yes
+      line="{{ item.auth_key }}"
+      owner={{ item.name }}
+      group={{ item.name  }}
+      mode=0644
+    when: item.auth_key is defined
+    with_items: "{{ user_details }}"
+
+  handlers:
+  - name: Restart sshd
+    ansible.builtin.service:
+      name: sshd
+      state: restarted
