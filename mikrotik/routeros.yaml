@@ -21,5 +21,6 @@
   - name: Add users
     community.routeros.command:
       commands:
-        - /ppp secret add name="{{ item.name }}" password="{{ item.password }}" profile="{{ profile }}"
+        - /ppp secret add name="{{ item.name }}" password="{{ lookup('ansible.builtin.password', '/tmp/passwords/{{ item.name }} length=12')}}" profile="{{ profile }}"
+        
     with_items: "{{ user_details }}"
