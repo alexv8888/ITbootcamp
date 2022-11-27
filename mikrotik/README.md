@@ -8,7 +8,7 @@ This playbook adds users for the l2tp vpn to the Mikrotik router. Usernames ans 
 - Put vpn profile name, usernames and passwords of the users in the vault.yaml
 - Run: 
 ```sh
-ansible-playbook -i inv.yaml routerostest.yaml --ask-vault-pass
+ansible-playbook -i inv.yaml routeros.yaml --ask-vault-pass
 ```
 Result example:
 
