@@ -5,6 +5,8 @@ This playbook does the following:
 - Disable password login over SSH
 - Add users and their public keys to the authorized_keys files
 
+Tested with Ansible 2.12.5
+
 ## _How to use_
 
 - Set the server ip and the username in inv.yaml
