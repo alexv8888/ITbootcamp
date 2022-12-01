@@ -26,7 +26,7 @@
     ansible.builtin.user:
       name: "{{ item.name }}"
       shell: /bin/bash
-      groups: ["{{ item.name }}", sudo]
+      groups: [sudo]
       append: yes
       state: present
     with_items: "{{ user_details }}"
@@ -56,7 +56,8 @@
     tags: users
 
   handlers:
-  - name: Restart sshd
+  - name: restart sshd
     ansible.builtin.service:
       name: sshd
       state: restarted
+      tags: ssh
